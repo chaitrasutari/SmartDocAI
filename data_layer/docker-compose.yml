@@ -1,0 +1,39 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: smartdoc_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  weaviate:
+    image: semitechnologies/weaviate:latest
+    container_name: smartdoc_weaviate
+    ports:
+      - "8090:8080"
+    environment:
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      QUERY_DEFAULTS_LIMIT: '25'
+      DEFAULT_VECTORIZER_MODULE: 'none'
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+
+  minio:
+    image: minio/minio
+    container_name: smartdoc_minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+volumes:
+  mongo_data:
+  weaviate_data:
+  minio_data:
